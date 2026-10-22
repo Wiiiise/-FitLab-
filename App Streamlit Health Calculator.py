@@ -3,7 +3,6 @@ from datetime import datetime
 
 # =========================
 # HEALTH & FITNESS CALCULATOR
-# Streamlit UI responsif untuk HP dan laptop
 # =========================
 
 st.set_page_config(
@@ -232,7 +231,7 @@ def tampilkan_list(items):
 st.markdown("""
 <div class="topbar">
   <h1>💚 HEALTH &amp; FITNESS CALCULATOR</h1>
-  <p>Dashboard kesehatan sederhana • Responsif untuk HP dan laptop</p>
+  <p>Dashboard Kesehatan Sederhana</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -256,15 +255,15 @@ with form_col:
 
         # Usia
         st.markdown('<div class="custom-label">📅 Usia (Tahun)</div>', unsafe_allow_html=True)
-        usia = st.number_input("Usia", min_value=1, max_value=120, value=17, step=1, label_visibility="collapsed")
+        usia = st.number_input("Usia", min_value=1, max_value=120, value=1, step=1, label_visibility="collapsed")
 
         # Berat
         st.markdown('<div class="custom-label">⚖️ Berat Badan (kg)</div>', unsafe_allow_html=True)
-        berat = st.number_input("Berat", min_value=1.0, max_value=500.0, value=58.0, step=0.5, label_visibility="collapsed")
+        berat = st.number_input("Berat", min_value=1.0, max_value=500.0, value=1.0, step=0.5, label_visibility="collapsed")
 
         # Tinggi
         st.markdown('<div class="custom-label">📏 Tinggi Badan (cm)</div>', unsafe_allow_html=True)
-        tinggi = st.number_input("Tinggi", min_value=50.0, max_value=250.0, value=170.0, step=0.5, label_visibility="collapsed")
+        tinggi = st.number_input("Tinggi", min_value=50.0, max_value=250.0, value=1.0, step=0.5, label_visibility="collapsed")
 
         # Jenis Kelamin
         st.markdown('<div class="custom-label">⚥ Jenis Kelamin</div>', unsafe_allow_html=True)
