@@ -25,6 +25,27 @@ st.markdown("""
         color: #24343a;
     }
     [data-testid="stHeader"] { background: rgba(0,0,0,0); }
+    
+    /* Memaksa semua label input berwarna gelap agar selalu terlihat */
+    label, [data-testid="stWidgetLabel"] p, [data-testid="stWidgetLabel"] label {
+        color: #1e293b !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* Style untuk label kustom */
+    .custom-label {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 4px;
+        font-size: 0.95rem;
+    }
+    .custom-sublabel {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 6px;
+    }
+
     .topbar {
         background: linear-gradient(100deg, #168d8b, #35b1a9);
         color: white;
@@ -116,7 +137,6 @@ def evaluasi_bmi(bmi):
 
 
 def hitung_bmr(berat, tinggi, usia, jenis_kelamin):
-    # Rumus Mifflin-St Jeor
     if jenis_kelamin == "Pria":
         return (10 * berat) + (6.25 * tinggi) - (5 * usia) + 5
     return (10 * berat) + (6.25 * tinggi) - (5 * usia) - 161
@@ -223,48 +243,38 @@ st.caption("Masukkan data kamu untuk menghitung BMI, BMR, kebutuhan kalori haria
 if "riwayat_kesehatan" not in st.session_state:
     st.session_state.riwayat_kesehatan = []
 
-# Layout: form kiri, hasil kanan pada layar lebar; otomatis bertumpuk di HP
+# Layout
 form_col, result_col = st.columns([0.85, 1.35], gap="large")
 
 with form_col:
     st.markdown('<div class="section-card"><h3>📝 Data Pengguna</h3></div>', unsafe_allow_html=True)
     with st.form("form_kesehatan", clear_on_submit=False):
-        # Penambahan label dan petunjuk teks di setiap input
-        nama = st.text_input(
-            "👤 Nama Lengkap", 
-            placeholder="Masukkan nama kamu"
-        )
-        usia = st.number_input(
-            "📅 Usia (Tahun)", 
-            min_value=1, 
-            max_value=120, 
-            value=17, 
-            step=1, 
-            help="Masukkan umur dalam hitungan tahun"
-        )
-        berat = st.number_input(
-            "⚖️ Berat Badan (kg)", 
-            min_value=1.0, 
-            max_value=500.0, 
-            value=58.0, 
-            step=0.5, 
-            help="Masukkan berat badan dalam satuan Kilogram (kg)"
-        )
-        tinggi = st.number_input(
-            "📏 Tinggi Badan (cm)", 
-            min_value=50.0, 
-            max_value=250.0, 
-            value=170.0, 
-            step=0.5, 
-            help="Masukkan tinggi badan dalam satuan Sentimeter (cm)"
-        )
-        jenis_kelamin = st.selectbox(
-            "⚥ Jenis Kelamin", 
-            ["Pria", "Wanita"], 
-            help="Pilih jenis kelamin untuk dasar perhitungan BMR yang akurat"
-        )
+        
+        # Nama
+        st.markdown('<div class="custom-label">👤 Nama Lengkap</div>', unsafe_allow_html=True)
+        nama = st.text_input("Nama", placeholder="Masukkan nama kamu", label_visibility="collapsed")
+
+        # Usia
+        st.markdown('<div class="custom-label">📅 Usia (Tahun)</div>', unsafe_allow_html=True)
+        usia = st.number_input("Usia", min_value=1, max_value=120, value=17, step=1, label_visibility="collapsed")
+
+        # Berat
+        st.markdown('<div class="custom-label">⚖️ Berat Badan (kg)</div>', unsafe_allow_html=True)
+        berat = st.number_input("Berat", min_value=1.0, max_value=500.0, value=58.0, step=0.5, label_visibility="collapsed")
+
+        # Tinggi
+        st.markdown('<div class="custom-label">📏 Tinggi Badan (cm)</div>', unsafe_allow_html=True)
+        tinggi = st.number_input("Tinggi", min_value=50.0, max_value=250.0, value=170.0, step=0.5, label_visibility="collapsed")
+
+        # Jenis Kelamin
+        st.markdown('<div class="custom-label">⚥ Jenis Kelamin</div>', unsafe_allow_html=True)
+        jenis_kelamin = st.selectbox("Jenis Kelamin", ["Pria", "Wanita"], label_visibility="collapsed")
+
+        # Aktivitas
+        st.markdown('<div class="custom-label">⚡ Tingkat Aktivitas Fisik</div>', unsafe_allow_html=True)
+        st.markdown('<div class="custom-sublabel">Pilih frekuensi olahraga mingguan kamu</div>', unsafe_allow_html=True)
         aktivitas_label = st.selectbox(
-            "⚡ Tingkat Aktivitas Fisik",
+            "Aktivitas",
             [
                 "Jarang olahraga",
                 "Ringan (1–3 hari/minggu)",
@@ -272,8 +282,9 @@ with form_col:
                 "Berat (6–7 hari/minggu)",
             ],
             index=2,
-            help="Pilih seberapa sering kamu berolahraga atau melakukan aktivitas fisik dalam seminggu",
+            label_visibility="collapsed"
         )
+        
         submitted = st.form_submit_button("HITUNG KALKULASI", type="primary", use_container_width=True)
 
     reset_col, history_col = st.columns(2)
