@@ -3,6 +3,7 @@ from datetime import datetime
 
 # =========================
 # HEALTH & FITNESS CALCULATOR
+# Streamlit UI responsif untuk HP dan laptop
 # =========================
 
 st.set_page_config(
@@ -231,7 +232,7 @@ def tampilkan_list(items):
 st.markdown("""
 <div class="topbar">
   <h1>💚 HEALTH &amp; FITNESS CALCULATOR</h1>
-  <p>Dashboard Kesehatan Sederhana</p>
+  <p>Dashboard kesehatan sederhana • Responsif untuk HP dan laptop</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -253,34 +254,35 @@ with form_col:
         st.markdown('<div class="custom-label">👤 Nama Lengkap</div>', unsafe_allow_html=True)
         nama = st.text_input("Nama", placeholder="Masukkan nama kamu", label_visibility="collapsed")
 
-        # Usia
+        # Usia (Default 0)
         st.markdown('<div class="custom-label">📅 Usia (Tahun)</div>', unsafe_allow_html=True)
-        usia = st.number_input("Usia", min_value=1, max_value=120, value=1, step=1, label_visibility="collapsed")
+        usia = st.number_input("Usia", min_value=0, max_value=120, value=0, step=1, label_visibility="collapsed")
 
-        # Berat
+        # Berat (Default 0.0)
         st.markdown('<div class="custom-label">⚖️ Berat Badan (kg)</div>', unsafe_allow_html=True)
-        berat = st.number_input("Berat", min_value=1.0, max_value=500.0, value=1.0, step=0.5, label_visibility="collapsed")
+        berat = st.number_input("Berat", min_value=0.0, max_value=500.0, value=0.0, step=0.5, label_visibility="collapsed")
 
-        # Tinggi
+        # Tinggi (Default 0.0)
         st.markdown('<div class="custom-label">📏 Tinggi Badan (cm)</div>', unsafe_allow_html=True)
-        tinggi = st.number_input("Tinggi", min_value=50.0, max_value=250.0, value=1.0, step=0.5, label_visibility="collapsed")
+        tinggi = st.number_input("Tinggi", min_value=0.0, max_value=250.0, value=0.0, step=0.5, label_visibility="collapsed")
 
-        # Jenis Kelamin
+        # Jenis Kelamin (Dengan pilihan netral)
         st.markdown('<div class="custom-label">⚥ Jenis Kelamin</div>', unsafe_allow_html=True)
-        jenis_kelamin = st.selectbox("Jenis Kelamin", ["Pria", "Wanita"], label_visibility="collapsed")
+        jenis_kelamin = st.selectbox("Jenis Kelamin", ["-- Pilih Jenis Kelamin --", "Pria", "Wanita"], index=0, label_visibility="collapsed")
 
-        # Aktivitas
+        # Aktivitas (Dengan pilihan netral)
         st.markdown('<div class="custom-label">⚡ Tingkat Aktivitas Fisik</div>', unsafe_allow_html=True)
         st.markdown('<div class="custom-sublabel">Pilih frekuensi olahraga mingguan kamu</div>', unsafe_allow_html=True)
         aktivitas_label = st.selectbox(
             "Aktivitas",
             [
+                "-- Pilih Tingkat Aktivitas --",
                 "Jarang olahraga",
                 "Ringan (1–3 hari/minggu)",
                 "Sedang (3–5 hari/minggu)",
                 "Berat (6–7 hari/minggu)",
             ],
-            index=2,
+            index=0,
             label_visibility="collapsed"
         )
         
@@ -298,37 +300,41 @@ with form_col:
         st.session_state["lihat_riwayat"] = not st.session_state.get("lihat_riwayat", False)
 
     if submitted:
-        bmi = hitung_bmi(float(berat), float(tinggi))
-        status = evaluasi_bmi(bmi)
-        bmr = hitung_bmr(float(berat), float(tinggi), int(usia), jenis_kelamin)
-        faktor = [1.2, 1.375, 1.55, 1.725]
-        index_aktivitas = [
-            "Jarang olahraga",
-            "Ringan (1–3 hari/minggu)",
-            "Sedang (3–5 hari/minggu)",
-            "Berat (6–7 hari/minggu)",
-        ].index(aktivitas_label)
-        tdee = bmr * faktor[index_aktivitas]
-        aktivitas_rec, makanan_rec, pola_rec = rekomendasi_kesehatan(status)
+        # Validasi input kosong / belum dipilih
+        if usia <= 0 or berat <= 0.0 or tinggi <= 0.0 or jenis_kelamin == "-- Pilih Jenis Kelamin --" or aktivitas_label == "-- Pilih Tingkat Aktivitas --":
+            st.error("⚠️ Mohon lengkapi semua data dengan benar (Usia, Berat, Tinggi > 0 serta pilih Jenis Kelamin dan Aktivitas).")
+        else:
+            bmi = hitung_bmi(float(berat), float(tinggi))
+            status = evaluasi_bmi(bmi)
+            bmr = hitung_bmr(float(berat), float(tinggi), int(usia), jenis_kelamin)
+            faktor = [1.2, 1.375, 1.55, 1.725]
+            index_aktivitas = [
+                "Jarang olahraga",
+                "Ringan (1–3 hari/minggu)",
+                "Sedang (3–5 hari/minggu)",
+                "Berat (6–7 hari/minggu)",
+            ].index(aktivitas_label)
+            tdee = bmr * faktor[index_aktivitas]
+            aktivitas_rec, makanan_rec, pola_rec = rekomendasi_kesehatan(status)
 
-        hasil = {
-            "nama": nama.strip() or "Pengguna",
-            "usia": int(usia),
-            "berat": float(berat),
-            "tinggi": float(tinggi),
-            "jenis_kelamin": jenis_kelamin,
-            "aktivitas_label": aktivitas_label,
-            "bmi": bmi,
-            "status": status,
-            "bmr": bmr,
-            "tdee": tdee,
-            "aktivitas_rec": aktivitas_rec,
-            "makanan_rec": makanan_rec,
-            "pola_rec": pola_rec,
-            "waktu": datetime.now().strftime("%d-%m-%Y %H:%M"),
-        }
-        st.session_state.hasil_kesehatan = hasil
-        st.session_state.riwayat_kesehatan.append(hasil)
+            hasil = {
+                "nama": nama.strip() or "Pengguna",
+                "usia": int(usia),
+                "berat": float(berat),
+                "tinggi": float(tinggi),
+                "jenis_kelamin": jenis_kelamin,
+                "aktivitas_label": aktivitas_label,
+                "bmi": bmi,
+                "status": status,
+                "bmr": bmr,
+                "tdee": tdee,
+                "aktivitas_rec": aktivitas_rec,
+                "makanan_rec": makanan_rec,
+                "pola_rec": pola_rec,
+                "waktu": datetime.now().strftime("%d-%m-%Y %H:%M"),
+            }
+            st.session_state.hasil_kesehatan = hasil
+            st.session_state.riwayat_kesehatan.append(hasil)
 
 with result_col:
     hasil = st.session_state.get("hasil_kesehatan")
@@ -380,7 +386,7 @@ with result_col:
         st.markdown("""
         <div class="section-card">
           <h3>💚 Hasil Kesehatan</h3>
-          <p>Hasil BMI, BMR, dan TDEE akan muncul di sini setelah kamu menekan tombol <b>HITUNG KALKULASI</b>.</p>
+          <p>Hasil BMI, BMR, dan TDEE akan muncul di sini setelah kamu mengisi data dan menekan tombol <b>HITUNG KALKULASI</b>.</p>
           <p class="small-note">Tip: gunakan data yang benar agar estimasi yang ditampilkan lebih relevan.</p>
         </div>
         """, unsafe_allow_html=True)
