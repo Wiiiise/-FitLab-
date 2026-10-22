@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # =========================
 # HEALTH & FITNESS CALCULATOR
@@ -317,6 +317,9 @@ with form_col:
             tdee = bmr * faktor[index_aktivitas]
             aktivitas_rec, makanan_rec, pola_rec = rekomendasi_kesehatan(status)
 
+            # Penyesuaian waktu zona WITA (+8 jam dari UTC server)
+            waktu_lokal = datetime.utcnow() + timedelta(hours=8)
+
             hasil = {
                 "nama": nama.strip() or "Pengguna",
                 "usia": int(usia),
@@ -331,7 +334,7 @@ with form_col:
                 "aktivitas_rec": aktivitas_rec,
                 "makanan_rec": makanan_rec,
                 "pola_rec": pola_rec,
-                "waktu": datetime.now().strftime("%d-%m-%Y %H:%M"),
+                "waktu": waktu_lokal.strftime("%d-%m-%Y %H:%M"),
             }
             st.session_state.hasil_kesehatan = hasil
             st.session_state.riwayat_kesehatan.append(hasil)
